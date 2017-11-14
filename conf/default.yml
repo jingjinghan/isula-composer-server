@@ -1,0 +1,15 @@
+log:
+  console:
+    level: debug
+db:
+  driver: mysql
+  user: isula
+  password: isula
+  name: isula
+  server: localhost:3306
+storageload: static
+storage:
+  filesystem:
+    rootDirectory: /tmp/idata
+session:
+  inmemory:
