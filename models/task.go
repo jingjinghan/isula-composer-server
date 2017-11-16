@@ -78,15 +78,16 @@ func QueryTaskByID(id int64) (*Task, error) {
 // AddTask adds a task
 func AddTask(username string) (int64, error) {
 	task := &Task{}
-
 	task.UserName = username
 	task.Status = TaskStatusNew
-	if id, err := orm.NewOrm().Insert(task); err != nil {
+
+	id, err := orm.NewOrm().Insert(task)
+	if err != nil {
 		logs.Error("[AddTask] fail to insert task '%s': %v", username, err)
 		return -1, err
-	} else {
-		return id, nil
 	}
+
+	return id, nil
 }
 
 // UpdateTask updates the output filename or the status
@@ -98,7 +99,7 @@ func UpdateTask(task *Task) error {
 	}
 
 	if t == nil {
-		return fmt.Errorf("Cannot find the task %d.", task.ID)
+		return fmt.Errorf("cannot find the task %d", task.ID)
 	}
 
 	if _, err := orm.NewOrm().Update(task); err != nil {
@@ -112,10 +113,10 @@ func UpdateTask(task *Task) error {
 func RemoveTask(id int64) (int64, error) {
 	task := &Task{}
 	task.ID = id
-	if num, err := orm.NewOrm().Delete(task); err != nil {
+	num, err := orm.NewOrm().Delete(task)
+	if err != nil {
 		logs.Error("[DeleteTask] %v", err)
 		return num, err
-	} else {
-		return num, nil
 	}
+	return num, nil
 }
