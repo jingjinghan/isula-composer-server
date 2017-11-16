@@ -17,9 +17,9 @@ env:
   - TESTCONN="testuser:testpass@tcp(localhost:3306)/testdb?charset=utf8"
 script:
         #  - git-validation -run DCO,short-subject -v -range ${TRAVIS_COMMIT_RANGE}
+  - ./mysql.sh
   - make
   - make test
-  - ./mysql.sh
   - ./coverage.sh
 
 after_success:
