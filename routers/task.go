@@ -27,6 +27,7 @@ func taskNameSpace() *beego.Namespace {
 			return true
 		}),
 		beego.NSRouter("/", &controllers.Task{}, "post:Create;get:List"),
+		beego.NSRouter("/:id", &controllers.Task{}, "get:Get"),
 	)
 
 	return ns

@@ -52,14 +52,14 @@ func TestQueryTaskByID(t *testing.T) {
 	}
 }
 
-func TestAddTask(t *testing.T) {
+func TestAddTaskFull(t *testing.T) {
 	if !testReady {
 		return
 	}
 
 	username := "testaddtask"
 
-	id, err := AddTask(username)
+	id, err := AddTaskFull(username, "", "", "")
 	assert.Nil(t, err)
 
 	task, err := QueryTaskByID(id)

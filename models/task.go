@@ -25,9 +25,18 @@ type Task struct {
 	// A user table will be created and UserName will be unique.
 	UserName string `orm:"column(username);size(255);null"`
 	Status   string `orm:"column(status);size(32);null"`
+
 	// OutputFile is the filename of the building iso/image
 	OutputFile string `orm:"column(output_file);size(255);null"`
-	// Scripts is the config file
+	// ConfigFile is the yml file of the building configuration
+	// FIXME: is 4096 big enough? I prefer NOT to save it on a storage.
+	ConfigFile string `orm:"column(config_file);size(4096);null`
+	// Scripts is the commands
+	// It should be empty if the builder server is just build iso/image,
+	// we provide default build command in that case.
+	// So, either a user provides `outputFile and configFile`
+	// or he/she provides a `scripts`.
+	Scripts string `orm:"column(scripts);size(4096);null"`
 }
 
 var taskModels = []interface{}{
@@ -75,11 +84,14 @@ func QueryTaskByID(id int64) (*Task, error) {
 	return &tasks[0], nil
 }
 
-// AddTask adds a task
-func AddTask(username string) (int64, error) {
+// AddTaskFull adds a task
+func AddTaskFull(username, output, config, script string) (int64, error) {
 	task := &Task{}
 	task.UserName = username
 	task.Status = TaskStatusNew
+	task.OutputFile = output
+	task.ConfigFile = config
+	task.Scripts = script
 
 	id, err := orm.NewOrm().Insert(task)
 	if err != nil {
