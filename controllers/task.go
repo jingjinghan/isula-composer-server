@@ -72,12 +72,36 @@ func (t *Task) Get() {
 
 	task, err := models.QueryTaskByID(int64(id))
 	if err != nil {
-		CtxErrorWrap(t.Ctx, http.StatusInternalServerError, err, fmt.Sprintf("Failed to get the task '%s' from '%s'.", id, user))
+		CtxErrorWrap(t.Ctx, http.StatusInternalServerError, err, fmt.Sprintf("Failed to get the task '%d' from '%s'.", id, user))
 		return
 	} else if task == nil {
-		CtxErrorWrap(t.Ctx, http.StatusNotFound, err, fmt.Sprintf("Failed to find the task '%s' from '%s'.", id, user))
+		CtxErrorWrap(t.Ctx, http.StatusNotFound, err, fmt.Sprintf("Failed to find the task '%d' from '%s'.", id, user))
 		return
 	}
 
 	CtxSuccessWrap(t.Ctx, http.StatusOK, task, nil)
+}
+
+// Delete deletes the task and the task's data
+func (t *Task) Delete() {
+	user := t.Ctx.Input.Param(":user")
+	idStr := t.Ctx.Input.Param(":id")
+
+	logs.Debug("Delete task %s from '%s'", idStr, user)
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		CtxErrorWrap(t.Ctx, http.StatusBadRequest, err, fmt.Sprintf("Invalid id detected '%s': %v.", idStr, err))
+		return
+	}
+
+	if num, err := models.RemoveTask(int64(id)); err != nil {
+		CtxErrorWrap(t.Ctx, http.StatusInternalServerError, err, fmt.Sprintf("Failed to delete the task '%d' from '%s'.", id, user))
+		return
+	} else if num == 0 {
+		CtxErrorWrap(t.Ctx, http.StatusNotFound, err, fmt.Sprintf("Failed to delete the task '%d' from '%s', cannot find it.", id, user))
+		return
+	}
+
+	CtxSuccessWrap(t.Ctx, http.StatusOK, "success to remove task", nil)
 }
