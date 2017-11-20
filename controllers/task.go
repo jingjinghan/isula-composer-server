@@ -54,7 +54,14 @@ func (t *Task) List() {
 	user := t.Ctx.Input.Param(":user")
 
 	logs.Debug("List tasks of '%s'", user)
-	CtxSuccessWrap(t.Ctx, http.StatusOK, "{}", nil)
+
+	tasks, err := models.QueryTaskListByUser(user)
+	if err != nil {
+		CtxErrorWrap(t.Ctx, http.StatusInternalServerError, err, fmt.Sprintf("Failed to get the tasks from '%s'.", user))
+		return
+	}
+
+	CtxSuccessWrap(t.Ctx, http.StatusOK, tasks, nil)
 }
 
 // Get returns the task detail
